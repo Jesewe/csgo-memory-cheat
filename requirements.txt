@@ -1,2 +1,4 @@
+configparser
 keyboard
 pymem
+ctypes

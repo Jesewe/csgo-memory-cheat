@@ -3,19 +3,20 @@ Simple CS:GO Memory Cheat - Python
 
 ### How to use:
 
-Python 3.4+ must be installed!
+Python 3.7+ must be installed!
 
 ```
-pip install -r requirements.txt
+[1] Download and unpack the archive from the repository
+```
+```
+[2] pip install -r requirements.txt
+```
+```
+[3] python3 main.py
 ```
 
-```
-python3 main.py
-```
-
-```
-Keybinds (You can change them):
-f4 - WallHack (Console)
-f5 - RadarHack (Console)
-f10 - Exit
-```
+## Default Keybinds (You can change them in the configuration file):
+f4 - WallHack Console
+f5 - RadarHack Console
+f6 - MoneyReveal
+f10 - Exiting the program
