@@ -4,8 +4,10 @@ import pymem.process
 from colorama import Fore, init
 init()
 
-# global status
-status = False
+# status
+statusWH = False
+statusRH = False
+statusMR = False
 # config
 config = configparser.ConfigParser()
 # logging
@@ -48,10 +50,10 @@ def wallhack():
         logging.error('[WallHack] ERROR: csgo.exe process is not running!')
         print(Fore.YELLOW + time(), Fore.RED + '[WallHack] ERROR: csgo.exe process is not running!')
     else:
-        global status
-        status = not status
-        logging.debug("WallHack is ON" if status else "WallHack is OFF")
-        print(Fore.YELLOW + time(), Fore.GREEN + "WallHack is ON" if status else Fore.RED + "WallHack is OFF")
+        global statusWH
+        statusWH = not statusWH
+        logging.debug("WallHack is ON" if statusWH else "WallHack is OFF")
+        print(Fore.YELLOW + time(), Fore.GREEN + "WallHack is ON" if statusWH else Fore.RED + "WallHack is OFF")
 # function radarhack
 def radarhack():
     try:
@@ -65,10 +67,10 @@ def radarhack():
         logging.error('[RadarHack] ERROR: csgo.exe process is not running!')
         print(Fore.YELLOW + time(), Fore.RED + '[RadarHack] ERROR: csgo.exe process is not running!')
     else:
-        global status
-        status = not status
-        logging.debug("RadarHack is ON" if status else "RadarHack is OFF")
-        print(Fore.YELLOW + time(), Fore.GREEN + "RadarHack is ON" if status else Fore.RED + "RadarHack is OFF")
+        global statusRH
+        statusRH = not statusRH
+        logging.debug("RadarHack is ON" if statusRH else "RadarHack is OFF")
+        print(Fore.YELLOW + time(), Fore.GREEN + "RadarHack is ON" if statusRH else Fore.RED + "RadarHack is OFF")
 # function moneyreveal
 def moneyreveal():
     try:
@@ -82,10 +84,10 @@ def moneyreveal():
         logging.error('[MoneyReveal] ERROR: csgo.exe process is not running!')
         print(Fore.YELLOW + time(), Fore.RED + '[MoneyReveal] ERROR: csgo.exe process is not running!')
     else:
-        global status
-        status = not status
-        logging.debug("MoneyReveal is ON" if status else "MoneyReveal is OFF")
-        print(Fore.YELLOW + time(), Fore.GREEN + "MoneyReveal is ON" if status else Fore.RED + "MoneyReveal is OFF")
+        global statusMR
+        statusMR = not statusMR
+        logging.debug("MoneyReveal is ON" if statusMR else "MoneyReveal is OFF")
+        print(Fore.YELLOW + time(), Fore.GREEN + "MoneyReveal is ON" if statusMR else Fore.RED + "MoneyReveal is OFF")
 
 banner='''
 _  _ ____ _  _ ____ ____ _   _    ____ _  _ ____ ____ ___
@@ -99,7 +101,7 @@ if there is no configuration file, the program will easily create it!
 '''
 # main
 if __name__ == '__main__':
-    ctypes.windll.kernel32.SetConsoleTitleW('Memory Cheat 1.1')
+    ctypes.windll.kernel32.SetConsoleTitleW('Memory Cheat 1.2')
     print(Fore.YELLOW + banner + Fore.GREEN + f'\n{key1} - WallHack Console\n{key2} - RadarHack Console\n{key3} - MoneyReveal\n{key4} - Exiting the program\n')
     keyboard.add_hotkey(key1, wallhack)
     keyboard.add_hotkey(key2, radarhack)
