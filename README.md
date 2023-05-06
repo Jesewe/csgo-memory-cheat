@@ -17,6 +17,9 @@ Python 3.7+ must be installed!
 
 ## Default Keybinds (You can change them in the configuration file):
 f4 - WallHack Console
+
 f5 - RadarHack Console
+
 f6 - MoneyReveal
+
 f10 - Exiting the program

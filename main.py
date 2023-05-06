@@ -11,7 +11,11 @@ statusMR = False
 # config
 config = configparser.ConfigParser()
 # logging
-logging.basicConfig(filename='logs.txt', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.basicConfig(
+    filename='logs.txt', 
+    level=logging.DEBUG, 
+    format='%(asctime)s %(message)s', 
+    datefmt='%Y-%m-%d [%H:%M:%S]')
 # file config.ini
 try:
     config.read("config.ini")
@@ -94,15 +98,15 @@ _  _ ____ _  _ ____ ____ _   _    ____ _  _ ____ ____ ___
 |\/| |___ |\/| |  | |__/  \_/     |    |__| |___ |__|  |
 |  | |___ |  | |__| |  \   |      |___ |  | |___ |  |  |
 
-                    MADE BY JESEWE
+            MADE BY JESEWE      Version: 1.3.0
 
 You can change the configuration file and set any hotkeys for each function, 
 if there is no configuration file, the program will easily create it!
 '''
 # main
 if __name__ == '__main__':
-    ctypes.windll.kernel32.SetConsoleTitleW('Memory Cheat 1.2')
-    print(Fore.YELLOW + banner + Fore.GREEN + f'\n{key1} - WallHack Console\n{key2} - RadarHack Console\n{key3} - MoneyReveal\n{key4} - Exiting the program\n')
+    ctypes.windll.kernel32.SetConsoleTitleW('Memory Cheat 1.3.0')
+    print(Fore.YELLOW + banner + Fore.GREEN + f'\n[{key1}] - WallHack Console\n[{key2}] - RadarHack Console\n[{key3}] - MoneyReveal\n[{key4}] - Exiting the program\n')
     keyboard.add_hotkey(key1, wallhack)
     keyboard.add_hotkey(key2, radarhack)
     keyboard.add_hotkey(key3, moneyreveal)
