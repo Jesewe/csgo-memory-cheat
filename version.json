@@ -1,0 +1,8 @@
+{
+    "latest_version": "1.4.0",
+    "release_date": "2023-05-12",
+    "release_notes": [
+        "Minor bug fixes",
+        "Added the function of checking for updates"
+    ]
+}
