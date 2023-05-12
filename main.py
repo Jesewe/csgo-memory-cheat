@@ -1,5 +1,5 @@
 # importing modules
-import pymem, re, logging, keyboard, os, datetime, configparser, ctypes
+import pymem, re, logging, keyboard, os, datetime, configparser, ctypes, requests
 import pymem.process
 from colorama import Fore, init
 init()
@@ -39,8 +39,23 @@ def time():
 # exiting the program
 def exit():
     logging.debug("I'm exiting the program")
-    print(Fore.YELLOW + time(), Fore.CYAN + 'Exiting the program...')
+    print(Fore.YELLOW + time(), Fore.RED + 'Exiting the program...')
     os.abort()
+# function "check update"
+def check_update(current_version):
+    url = "https://raw.githubusercontent.com/Jesewe/csgo-memory-cheat/main/version.json"
+    params = {"current_version": current_version}
+    try:
+        response = requests.get(url, params=params)
+        data = response.json()
+        logging.debug('Checking for updates...')
+        if data["latest_version"] > current_version:
+            print(Fore.GREEN + "A new version of the program is available:", data["latest_version"])
+        else:
+            print(Fore.YELLOW + "You have the latest version of the program installed!")
+    except requests.exceptions.RequestException as e:
+        print(Fore.RED + "Could not get information about the latest version of the program.")
+        logging.error('Error: Could not get information about the latest version of the program.')
 # function wallhack
 def wallhack():
     try:
@@ -98,15 +113,17 @@ _  _ ____ _  _ ____ ____ _   _    ____ _  _ ____ ____ ___
 |\/| |___ |\/| |  | |__/  \_/     |    |__| |___ |__|  |
 |  | |___ |  | |__| |  \   |      |___ |  | |___ |  |  |
 
-            MADE BY JESEWE      Version: 1.3.0
+            Made by Jesewe      Version: 1.4.0
 
 You can change the configuration file and set any hotkeys for each function, 
 if there is no configuration file, the program will easily create it!
 '''
 # main
 if __name__ == '__main__':
-    ctypes.windll.kernel32.SetConsoleTitleW('Memory Cheat 1.3.0')
-    print(Fore.YELLOW + banner + Fore.GREEN + f'\n[{key1}] - WallHack Console\n[{key2}] - RadarHack Console\n[{key3}] - MoneyReveal\n[{key4}] - Exiting the program\n')
+    ctypes.windll.kernel32.SetConsoleTitleW('CS:GO Memory Cheat 1.4.0')
+    print(Fore.YELLOW + banner)
+    check_update('1.4.0')
+    print(Fore.GREEN + f'\n[{key1}] - WallHack Console\n[{key2}] - RadarHack Console\n[{key3}] - MoneyReveal\n[{key4}] - Exiting the program\n')
     keyboard.add_hotkey(key1, wallhack)
     keyboard.add_hotkey(key2, radarhack)
     keyboard.add_hotkey(key3, moneyreveal)

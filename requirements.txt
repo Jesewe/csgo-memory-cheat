@@ -2,3 +2,4 @@ configparser
 keyboard
 pymem
 ctypes
+requests
