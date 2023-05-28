@@ -3,3 +3,4 @@ keyboard
 pymem
 ctypes
 requests
+colorama

@@ -1,5 +1,5 @@
 # importing modules
-import pymem, re, logging, keyboard, os, datetime, configparser, ctypes, requests
+import pymem, re, keyboard, datetime, configparser, ctypes, requests
 import pymem.process
 from colorama import Fore, init
 init()
@@ -10,37 +10,22 @@ statusRH = False
 statusMR = False
 # config
 config = configparser.ConfigParser()
-# logging
-logging.basicConfig(
-    filename='logs.txt', 
-    level=logging.DEBUG, 
-    format='%(asctime)s %(message)s', 
-    datefmt='%Y-%m-%d [%H:%M:%S]')
 # file config.ini
 try:
     config.read("config.ini")
     key1 = config["DEFAULT"]["WallHack"]
     key2 = config["DEFAULT"]["RadarHack"]
     key3 = config["DEFAULT"]["MoneyReveal"]
-    key4 = config["DEFAULT"]["Exit"]
-    logging.debug('Configuration file found')
 except:
-    logging.debug('The configuration file has been created')
-    config["DEFAULT"] = {"WallHack": "f4", "RadarHack": "f5", "MoneyReveal": "f6", "Exit": "f10"}
+    config["DEFAULT"] = {"WallHack": "f4", "RadarHack": "f5", "MoneyReveal": "f6"}
     with open("config.ini", "w") as config_file:
         config.write(config_file)
     key1 = "f4"
     key2 = "f5"
     key3 = "f6"
-    key4 = "f10"
 # time display on the screen
 def time():
     return datetime.datetime.now().strftime('[%H:%M:%S]')
-# exiting the program
-def exit():
-    logging.debug("I'm exiting the program")
-    print(Fore.YELLOW + time(), Fore.RED + 'Exiting the program...')
-    os.abort()
 # function "check update"
 def check_update(current_version):
     url = "https://raw.githubusercontent.com/Jesewe/csgo-memory-cheat/main/version.json"
@@ -48,14 +33,12 @@ def check_update(current_version):
     try:
         response = requests.get(url, params=params)
         data = response.json()
-        logging.debug('Checking for updates...')
         if data["latest_version"] > current_version:
             print(Fore.GREEN + "A new version of the program is available:", data["latest_version"])
         else:
             print(Fore.YELLOW + "You have the latest version of the program installed!")
     except requests.exceptions.RequestException as e:
         print(Fore.RED + "Could not get information about the latest version of the program.")
-        logging.error('Error: Could not get information about the latest version of the program.')
 # function wallhack
 def wallhack():
     try:
@@ -66,12 +49,10 @@ def wallhack():
         pm.write_uchar(address, 2 if pm.read_uchar(address) == 1 else 1)
         pm.close_process()
     except Exception:
-        logging.error('[WallHack] ERROR: csgo.exe process is not running!')
         print(Fore.YELLOW + time(), Fore.RED + '[WallHack] ERROR: csgo.exe process is not running!')
     else:
         global statusWH
         statusWH = not statusWH
-        logging.debug("WallHack is ON" if statusWH else "WallHack is OFF")
         print(Fore.YELLOW + time(), Fore.GREEN + "WallHack is ON" if statusWH else Fore.RED + "WallHack is OFF")
 # function radarhack
 def radarhack():
@@ -83,12 +64,10 @@ def radarhack():
         pm.write_uchar(address, 0 if pm.read_uchar(address) != 0 else 2)
         pm.close_process()
     except Exception:
-        logging.error('[RadarHack] ERROR: csgo.exe process is not running!')
         print(Fore.YELLOW + time(), Fore.RED + '[RadarHack] ERROR: csgo.exe process is not running!')
     else:
         global statusRH
         statusRH = not statusRH
-        logging.debug("RadarHack is ON" if statusRH else "RadarHack is OFF")
         print(Fore.YELLOW + time(), Fore.GREEN + "RadarHack is ON" if statusRH else Fore.RED + "RadarHack is OFF")
 # function moneyreveal
 def moneyreveal():
@@ -100,12 +79,10 @@ def moneyreveal():
         pm.write_uchar(address, 0xEB if pm.read_uchar(address) == 0x75 else 0x75)
         pm.close_process()
     except Exception:
-        logging.error('[MoneyReveal] ERROR: csgo.exe process is not running!')
         print(Fore.YELLOW + time(), Fore.RED + '[MoneyReveal] ERROR: csgo.exe process is not running!')
     else:
         global statusMR
         statusMR = not statusMR
-        logging.debug("MoneyReveal is ON" if statusMR else "MoneyReveal is OFF")
         print(Fore.YELLOW + time(), Fore.GREEN + "MoneyReveal is ON" if statusMR else Fore.RED + "MoneyReveal is OFF")
 
 banner='''
@@ -113,19 +90,18 @@ _  _ ____ _  _ ____ ____ _   _    ____ _  _ ____ ____ ___
 |\/| |___ |\/| |  | |__/  \_/     |    |__| |___ |__|  |
 |  | |___ |  | |__| |  \   |      |___ |  | |___ |  |  |
 
-            Made by Jesewe      Version: 1.4.0
+            Made by Jesewe      Version: 1.5.0
 
 You can change the configuration file and set any hotkeys for each function, 
 if there is no configuration file, the program will easily create it!
 '''
 # main
 if __name__ == '__main__':
-    ctypes.windll.kernel32.SetConsoleTitleW('CS:GO Memory Cheat 1.4.0')
-    print(Fore.YELLOW + banner)
-    check_update('1.4.0')
-    print(Fore.GREEN + f'\n[{key1}] - WallHack Console\n[{key2}] - RadarHack Console\n[{key3}] - MoneyReveal\n[{key4}] - Exiting the program\n')
+    ctypes.windll.kernel32.SetConsoleTitleW('CS:GO Memory Cheat 1.5.0')
+    print(Fore.LIGHTBLUE_EX + banner)
+    check_update('1.5.0')
+    print(Fore.LIGHTMAGENTA_EX + f'\n[{key1}] - WallHack\n[{key2}] - RadarHack\n[{key3}] - MoneyReveal\n')
     keyboard.add_hotkey(key1, wallhack)
     keyboard.add_hotkey(key2, radarhack)
     keyboard.add_hotkey(key3, moneyreveal)
-    keyboard.add_hotkey(key4, exit)
     keyboard.wait()
