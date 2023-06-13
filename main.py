@@ -1,16 +1,13 @@
-# importing modules
-import pymem, re, keyboard, datetime, configparser, ctypes, requests
+import pymem, re, keyboard, datetime, configparser, ctypes, requests, time
 import pymem.process
 from colorama import Fore, init
 init()
 
-# status
 statusWH = False
 statusRH = False
 statusMR = False
-# config
 config = configparser.ConfigParser()
-# file config.ini
+
 try:
     config.read("config.ini")
     key1 = config["DEFAULT"]["WallHack"]
@@ -23,23 +20,23 @@ except:
     key1 = "f4"
     key2 = "f5"
     key3 = "f6"
-# time display on the screen
+
 def time():
     return datetime.datetime.now().strftime('[%H:%M:%S]')
-# function "check update"
-def check_update(current_version):
-    url = "https://raw.githubusercontent.com/Jesewe/csgo-memory-cheat/main/version.json"
-    params = {"current_version": current_version}
+
+def check_for_updates(version):
+    server_url = 'https://raw.githubusercontent.com/Jesewe/csgo-memory-cheat/main/version.json'
     try:
-        response = requests.get(url, params=params)
-        data = response.json()
-        if data["latest_version"] > current_version:
-            print(Fore.GREEN + "A new version of the program is available:", data["latest_version"])
+        response = requests.get(server_url)
+        latest_version = response.text.strip()
+        if latest_version == version:
+            return "You already have the latest version of the project installed."
         else:
-            print(Fore.YELLOW + "You have the latest version of the program installed!")
-    except requests.exceptions.RequestException as e:
-        print(Fore.RED + "Could not get information about the latest version of the program.")
-# function wallhack
+            return Fore.GREEN + f"A new version of the project is available: {latest_version}. Please update."
+
+    except requests.RequestException as e:
+        return Fore.RED + f"Error checking for updates: {str(e)}"
+
 def wallhack():
     try:
         pm = pymem.Pymem('csgo.exe')
@@ -54,7 +51,7 @@ def wallhack():
         global statusWH
         statusWH = not statusWH
         print(Fore.YELLOW + time(), Fore.GREEN + "WallHack is ON" if statusWH else Fore.RED + "WallHack is OFF")
-# function radarhack
+
 def radarhack():
     try:
         pm = pymem.Pymem('csgo.exe')
@@ -69,7 +66,7 @@ def radarhack():
         global statusRH
         statusRH = not statusRH
         print(Fore.YELLOW + time(), Fore.GREEN + "RadarHack is ON" if statusRH else Fore.RED + "RadarHack is OFF")
-# function moneyreveal
+
 def moneyreveal():
     try:
         pm = pymem.Pymem('csgo.exe')
@@ -85,22 +82,22 @@ def moneyreveal():
         statusMR = not statusMR
         print(Fore.YELLOW + time(), Fore.GREEN + "MoneyReveal is ON" if statusMR else Fore.RED + "MoneyReveal is OFF")
 
-banner='''
-_  _ ____ _  _ ____ ____ _   _    ____ _  _ ____ ____ ___
-|\/| |___ |\/| |  | |__/  \_/     |    |__| |___ |__|  |
-|  | |___ |  | |__| |  \   |      |___ |  | |___ |  |  |
+version='1.5.1'
+banner=f'''
+    __  ___________  _______  ______  __   ________  ___________  ______
+   /  |/  / ____/  |/  / __ \/ __ \ \/ /  / ____/ / / / ____/   |/_  __/
+  / /|_/ / __/ / /|_/ / / / / /_/ /\  /  / /   / /_/ / __/ / /| | / /
+ / /  / / /___/ /  / / /_/ / _, _/ / /  / /___/ __  / /___/ ___ |/ /
+/_/  /_/_____/_/  /_/\____/_/ |_| /_/   \____/_/ /_/_____/_/  |_/_/ 
 
-            Made by Jesewe      Version: 1.5.0
-
-You can change the configuration file and set any hotkeys for each function, 
-if there is no configuration file, the program will easily create it!
+                Made by Jesewe      Version: {version}
 '''
-# main
+
 if __name__ == '__main__':
-    ctypes.windll.kernel32.SetConsoleTitleW('CS:GO Memory Cheat 1.5.0')
-    print(Fore.LIGHTBLUE_EX + banner)
-    check_update('1.5.0')
-    print(Fore.LIGHTMAGENTA_EX + f'\n[{key1}] - WallHack\n[{key2}] - RadarHack\n[{key3}] - MoneyReveal\n')
+    ctypes.windll.kernel32.SetConsoleTitleW(f'CS:GO Memory Cheat {version} | github.com/Jesewe/csgo-memory-cheat')
+    print(Fore.YELLOW + banner)
+    print(check_for_updates(version))
+    print(Fore.LIGHTGREEN_EX + f'\n[{key1}] - WallHack\n[{key2}] - RadarHack\n[{key3}] - MoneyReveal\n')
     keyboard.add_hotkey(key1, wallhack)
     keyboard.add_hotkey(key2, radarhack)
     keyboard.add_hotkey(key3, moneyreveal)

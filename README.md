@@ -1,6 +1,7 @@
 ### CS:GO Memory Cheat
 Simple CS:GO Memory Cheat - Python
-Version : 1.5.0
+
+Version : 1.5.1
 
 ### How to use:
 
@@ -17,8 +18,8 @@ Python 3.7+ must be installed!
 ```
 
 ## Default Keybinds (You can change them in the configuration file):
-f4 - WallHack
+[f4] - WallHack
 
-f5 - RadarHack
+[f5] - RadarHack
 
-f6 - MoneyReveal
+[f6] - MoneyReveal
