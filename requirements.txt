@@ -4,3 +4,4 @@ pymem
 ctypes
 requests
 colorama
+os

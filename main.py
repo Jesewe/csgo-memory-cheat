@@ -1,4 +1,4 @@
-import pymem, re, keyboard, datetime, configparser, ctypes, requests, time
+import pymem, re, keyboard, datetime, configparser, ctypes, requests, time, random, os
 import pymem.process
 from colorama import Fore, init
 init()
@@ -13,16 +13,22 @@ try:
     key1 = config["DEFAULT"]["WallHack"]
     key2 = config["DEFAULT"]["RadarHack"]
     key3 = config["DEFAULT"]["MoneyReveal"]
+    key4 = config["DEFAULT"]["Exit"]
 except:
-    config["DEFAULT"] = {"WallHack": "f4", "RadarHack": "f5", "MoneyReveal": "f6"}
+    config["DEFAULT"] = {"WallHack": "f4", "RadarHack": "f5", "MoneyReveal": "f6", "Exit": "f10"}
     with open("config.ini", "w") as config_file:
         config.write(config_file)
     key1 = "f4"
     key2 = "f5"
     key3 = "f6"
+    key4 = "f10"
 
 def time():
     return datetime.datetime.now().strftime('[%H:%M:%S]')
+
+def exit_program():
+    print(Fore.RED + "Exit...")
+    os.abort()
 
 def check_for_updates(version):
     server_url = 'https://raw.githubusercontent.com/Jesewe/csgo-memory-cheat/main/version.json'
@@ -82,23 +88,22 @@ def moneyreveal():
         statusMR = not statusMR
         print(Fore.YELLOW + time(), Fore.GREEN + "MoneyReveal is ON" if statusMR else Fore.RED + "MoneyReveal is OFF")
 
-version='1.5.1'
+version='1.5.2'
+fake_programs = ["WinBooster", "GameBooster", "DataAnalyzer", "CodeOptimizer", "TaskManagerPro", "SystemGuardian"]
+random_program = random.choice(fake_programs)
 banner=f'''
-    __  ___________  _______  ______  __   ________  ___________  ______
-   /  |/  / ____/  |/  / __ \/ __ \ \/ /  / ____/ / / / ____/   |/_  __/
-  / /|_/ / __/ / /|_/ / / / / /_/ /\  /  / /   / /_/ / __/ / /| | / /
- / /  / / /___/ /  / / /_/ / _, _/ / /  / /___/ __  / /___/ ___ |/ /
-/_/  /_/_____/_/  /_/\____/_/ |_| /_/   \____/_/ /_/_____/_/  |_/_/ 
+\t\t\t  {random_program}
 
                 Made by Jesewe      Version: {version}
 '''
 
 if __name__ == '__main__':
-    ctypes.windll.kernel32.SetConsoleTitleW(f'CS:GO Memory Cheat {version} | github.com/Jesewe/csgo-memory-cheat')
+    ctypes.windll.kernel32.SetConsoleTitleW(f'{random_program} v{version}')
     print(Fore.YELLOW + banner)
     print(check_for_updates(version))
-    print(Fore.LIGHTGREEN_EX + f'\n[{key1}] - WallHack\n[{key2}] - RadarHack\n[{key3}] - MoneyReveal\n')
+    print(Fore.LIGHTGREEN_EX + f'\n[{key1}] - WallHack\n[{key2}] - RadarHack\n[{key3}] - MoneyReveal\n[{key4}] - Exit\n')
     keyboard.add_hotkey(key1, wallhack)
     keyboard.add_hotkey(key2, radarhack)
     keyboard.add_hotkey(key3, moneyreveal)
+    keyboard.add_hotkey(key4, exit_program)
     keyboard.wait()
