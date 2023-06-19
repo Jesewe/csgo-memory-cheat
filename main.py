@@ -51,8 +51,18 @@ def wallhack():
         address = client.lpBaseOfDll + re.search(rb'\x33\xC0\x83\xFA.\xB9\x20',clientModule).start() + 4
         pm.write_uchar(address, 2 if pm.read_uchar(address) == 1 else 1)
         pm.close_process()
-    except Exception:
-        print(Fore.YELLOW + time(), Fore.RED + '[WallHack] ERROR: csgo.exe process is not running!')
+    except pymem.exception.ProcessNotFound:
+        print(Fore.YELLOW + time(), Fore.RED + '[WallHack] csgo.exe process is not running!')
+    except pymem.exception.ProcessError:
+        print(Fore.YELLOW + time(), Fore.RED + '[WallHack] Error accessing process csgo.exe')
+    except pymem.exception.ModuleNotFound:
+        print(Fore.YELLOW + time(), Fore.RED + '[WallHack] module not found')
+    except pymem.exception.MemoryReadError:
+        print(Fore.YELLOW + time(), Fore.RED + '[WallHack] Error reading memory')
+    except pymem.exception.MemoryWriteError:
+        print(Fore.YELLOW + time(), Fore.RED + '[WallHack] Error writing memory')
+    except AttributeError:
+        print(Fore.YELLOW + time(), Fore.RED + '[WallHack] Byte pattern not found')
     else:
         global statusWH
         statusWH = not statusWH
@@ -66,8 +76,18 @@ def radarhack():
         address = client.lpBaseOfDll + re.search(rb'\x74\x15\x8B\x47\x08\x8D\x4F\x08',clientModule).start() - 1
         pm.write_uchar(address, 0 if pm.read_uchar(address) != 0 else 2)
         pm.close_process()
-    except Exception:
-        print(Fore.YELLOW + time(), Fore.RED + '[RadarHack] ERROR: csgo.exe process is not running!')
+    except pymem.exception.ProcessNotFound:
+        print(Fore.YELLOW + time(), Fore.RED + '[RadarHack] csgo.exe process is not running!')
+    except pymem.exception.ProcessError:
+        print(Fore.YELLOW + time(), Fore.RED + '[RadarHack] Error accessing process csgo.exe')
+    except pymem.exception.ModuleNotFound:
+        print(Fore.YELLOW + time(), Fore.RED + '[RadarHack] module not found')
+    except pymem.exception.MemoryReadError:
+        print(Fore.YELLOW + time(), Fore.RED + '[RadarHack] Error reading memory')
+    except pymem.exception.MemoryWriteError:
+        print(Fore.YELLOW + time(), Fore.RED + '[RadarHack] Error writing memory')
+    except AttributeError:
+        print(Fore.YELLOW + time(), Fore.RED + '[RadarHack] Byte pattern not found')
     else:
         global statusRH
         statusRH = not statusRH
@@ -81,18 +101,33 @@ def moneyreveal():
         address = client.lpBaseOfDll + re.search(rb'.\x0C\x5B\x5F\xB8\xFB\xFF\xFF\xFF',clientModule).start()
         pm.write_uchar(address, 0xEB if pm.read_uchar(address) == 0x75 else 0x75)
         pm.close_process()
-    except Exception:
-        print(Fore.YELLOW + time(), Fore.RED + '[MoneyReveal] ERROR: csgo.exe process is not running!')
+    except pymem.exception.ProcessNotFound:
+        print(Fore.YELLOW + time(), Fore.RED + '[MoneyReveal] csgo.exe process is not running!')
+    except pymem.exception.ProcessError:
+        print(Fore.YELLOW + time(), Fore.RED + '[MoneyReveal] Error accessing process csgo.exe')
+    except pymem.exception.ModuleNotFound:
+        print(Fore.YELLOW + time(), Fore.RED + '[MoneyReveal] module not found')
+    except pymem.exception.MemoryReadError:
+        print(Fore.YELLOW + time(), Fore.RED + '[MoneyReveal] Error reading memory')
+    except pymem.exception.MemoryWriteError:
+        print(Fore.YELLOW + time(), Fore.RED + '[MoneyReveal] Error writing memory')
+    except AttributeError:
+        print(Fore.YELLOW + time(), Fore.RED + '[MoneyReveal] Byte pattern not found')
     else:
         global statusMR
         statusMR = not statusMR
         print(Fore.YELLOW + time(), Fore.GREEN + "MoneyReveal is ON" if statusMR else Fore.RED + "MoneyReveal is OFF")
 
-version='1.5.2'
+version='1.5.3'
 fake_programs = ["WinBooster", "GameBooster", "DataAnalyzer", "CodeOptimizer", "TaskManagerPro", "SystemGuardian"]
 random_program = random.choice(fake_programs)
 banner=f'''
-\t\t\t  {random_program}
+    __  ___                                   ________               __
+   /  |/  /__  ____ ___  ____  _______  __   / ____/ /_  ___  ____ _/ /_
+  / /|_/ / _ \/ __ `__ \/ __ \/ ___/ / / /  / /   / __ \/ _ \/ __ `/ __/
+ / /  / /  __/ / / / / / /_/ / /  / /_/ /  / /___/ / / /  __/ /_/ / /_
+/_/  /_/\___/_/ /_/ /_/\____/_/   \__, /   \____/_/ /_/\___/\__,_/\__/
+                                 /____/
 
                 Made by Jesewe      Version: {version}
 '''
@@ -101,7 +136,10 @@ if __name__ == '__main__':
     ctypes.windll.kernel32.SetConsoleTitleW(f'{random_program} v{version}')
     print(Fore.YELLOW + banner)
     print(check_for_updates(version))
-    print(Fore.LIGHTGREEN_EX + f'\n[{key1}] - WallHack\n[{key2}] - RadarHack\n[{key3}] - MoneyReveal\n[{key4}] - Exit\n')
+    print(Fore.LIGHTMAGENTA_EX + f'''
+        [{key1}] WallHack               [{key3}] MoneyReveal
+        [{key2}] RadarHack              [{key4}] Exit
+    ''')
     keyboard.add_hotkey(key1, wallhack)
     keyboard.add_hotkey(key2, radarhack)
     keyboard.add_hotkey(key3, moneyreveal)

@@ -12,7 +12,7 @@ The CS:GO Memory Cheat script offers the following features:
 
 3. **MoneyReveal**: MoneyReveal reveals the amount of money held by all players in the game, allowing users to monitor the financial status of their opponents.
 
-### Other
+### Installation
 
 Configuration (Optional): Open the `config.ini` file and modify the hotkey bindings for each feature if desired.
 
