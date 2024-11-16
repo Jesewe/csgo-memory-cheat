@@ -1,7 +1,5 @@
-configparser
 keyboard
 pymem
 ctypes
 requests
 colorama
-os
