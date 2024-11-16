@@ -1,147 +1,126 @@
-import pymem, re, keyboard, datetime, configparser, ctypes, requests, time, random, os
-import pymem.process
-from colorama import Fore, init
-init()
+import pymem, pymem.process, re, os, ctypes, logging, json, keyboard
+from requests import get
+from colorama import init, Fore
 
-statusWH = False
-statusRH = False
-statusMR = False
-config = configparser.ConfigParser()
+# Initialize colorama for colored console output
+init(autoreset=True)
 
-try:
-    config.read("config.ini")
-    key1 = config["DEFAULT"]["WallHack"]
-    key2 = config["DEFAULT"]["RadarHack"]
-    key3 = config["DEFAULT"]["MoneyReveal"]
-    key4 = config["DEFAULT"]["Exit"]
-except:
-    config["DEFAULT"] = {"WallHack": "f4", "RadarHack": "f5", "MoneyReveal": "f6", "Exit": "f10"}
-    with open("config.ini", "w") as config_file:
-        config.write(config_file)
-    key1 = "f4"
-    key2 = "f5"
-    key3 = "f6"
-    key4 = "f10"
+class Logger:
+    """Handles logging setup."""
+    LOG_DIRECTORY = os.path.expandvars(r'%LOCALAPPDATA%\Requests\ItsJesewe\csgo\logs')
+    LOG_FILE = os.path.join(LOG_DIRECTORY, 'application.log')
 
-def time():
-    return datetime.datetime.now().strftime('[%H:%M:%S]')
+    @staticmethod
+    def setup_logging():
+        os.makedirs(Logger.LOG_DIRECTORY, exist_ok=True)
+        with open(Logger.LOG_FILE, 'w') as f:
+            pass
 
-def exit_program():
-    print(Fore.RED + "Exit...")
-    os.abort()
+        logging.basicConfig(
+            level=logging.INFO,
+            format='[%(levelname)s]: %(message)s',
+            handlers=[logging.FileHandler(Logger.LOG_FILE), logging.StreamHandler()]
+        )
 
-def check_for_updates(version):
-    server_url = 'https://raw.githubusercontent.com/Jesewe/csgo-memory-cheat/main/version.json'
-    try:
-        response = requests.get(server_url)
-        latest_version = response.text.strip()
-        if latest_version == version:
-            return "You already have the latest version of the project installed."
-        else:
-            return Fore.GREEN + f"A new version of the project is available: {latest_version}. Please update."
+class ConfigManager:
+    """Handles configuration management."""
+    CONFIG_DIRECTORY = os.path.expandvars(r'%LOCALAPPDATA%\Requests\ItsJesewe\csgo')
+    CONFIG_FILE = os.path.join(CONFIG_DIRECTORY, 'config.json')
+    DEFAULT_CONFIG = {
+        "WallHack": "f4",
+        "RadarHack": "f5",
+        "MoneyReveal": "f6",
+        "Exit": "f10"
+    }
 
-    except requests.RequestException as e:
-        return Fore.RED + f"Error checking for updates: {str(e)}"
+    @staticmethod
+    def load_config():
+        os.makedirs(ConfigManager.CONFIG_DIRECTORY, exist_ok=True)
+        if not os.path.exists(ConfigManager.CONFIG_FILE):
+            ConfigManager.save_config(ConfigManager.DEFAULT_CONFIG)
+        try:
+            with open(ConfigManager.CONFIG_FILE, 'r') as file:
+                return json.load(file)
+        except (json.JSONDecodeError, IOError):
+            logging.error("Failed to load configuration. Using defaults.")
+            return ConfigManager.DEFAULT_CONFIG
 
-def wallhack():
-    try:
-        pm = pymem.Pymem('csgo.exe')
-        client = pymem.process.module_from_name(pm.process_handle,'client.dll')
-        clientModule = pm.read_bytes(client.lpBaseOfDll, client.SizeOfImage)
-        address = client.lpBaseOfDll + re.search(rb'\x33\xC0\x83\xFA.\xB9\x20',clientModule).start() + 4
-        pm.write_uchar(address, 2 if pm.read_uchar(address) == 1 else 1)
-        pm.close_process()
-    except pymem.exception.ProcessNotFound:
-        print(Fore.YELLOW + time(), Fore.RED + '[WallHack] csgo.exe process is not running!')
-    except pymem.exception.ProcessError:
-        print(Fore.YELLOW + time(), Fore.RED + '[WallHack] Error accessing process csgo.exe')
-    except pymem.exception.ModuleNotFound:
-        print(Fore.YELLOW + time(), Fore.RED + '[WallHack] module not found')
-    except pymem.exception.MemoryReadError:
-        print(Fore.YELLOW + time(), Fore.RED + '[WallHack] Error reading memory')
-    except pymem.exception.MemoryWriteError:
-        print(Fore.YELLOW + time(), Fore.RED + '[WallHack] Error writing memory')
-    except AttributeError:
-        print(Fore.YELLOW + time(), Fore.RED + '[WallHack] Byte pattern not found')
-    else:
-        global statusWH
-        statusWH = not statusWH
-        print(Fore.YELLOW + time(), Fore.GREEN + "WallHack is ON" if statusWH else Fore.RED + "WallHack is OFF")
+    @staticmethod
+    def save_config(config):
+        with open(ConfigManager.CONFIG_FILE, 'w') as file:
+            json.dump(config, file, indent=4)
 
-def radarhack():
-    try:
-        pm = pymem.Pymem('csgo.exe')
-        client = pymem.process.module_from_name(pm.process_handle,'client.dll')
-        clientModule = pm.read_bytes(client.lpBaseOfDll, client.SizeOfImage)
-        address = client.lpBaseOfDll + re.search(rb'\x74\x15\x8B\x47\x08\x8D\x4F\x08',clientModule).start() - 1
-        pm.write_uchar(address, 0 if pm.read_uchar(address) != 0 else 2)
-        pm.close_process()
-    except pymem.exception.ProcessNotFound:
-        print(Fore.YELLOW + time(), Fore.RED + '[RadarHack] csgo.exe process is not running!')
-    except pymem.exception.ProcessError:
-        print(Fore.YELLOW + time(), Fore.RED + '[RadarHack] Error accessing process csgo.exe')
-    except pymem.exception.ModuleNotFound:
-        print(Fore.YELLOW + time(), Fore.RED + '[RadarHack] module not found')
-    except pymem.exception.MemoryReadError:
-        print(Fore.YELLOW + time(), Fore.RED + '[RadarHack] Error reading memory')
-    except pymem.exception.MemoryWriteError:
-        print(Fore.YELLOW + time(), Fore.RED + '[RadarHack] Error writing memory')
-    except AttributeError:
-        print(Fore.YELLOW + time(), Fore.RED + '[RadarHack] Byte pattern not found')
-    else:
-        global statusRH
-        statusRH = not statusRH
-        print(Fore.YELLOW + time(), Fore.GREEN + "RadarHack is ON" if statusRH else Fore.RED + "RadarHack is OFF")
+class Utility:
+    """Utility functions."""
+    @staticmethod
+    def set_console_title(title):
+        ctypes.windll.kernel32.SetConsoleTitleW(title)
 
-def moneyreveal():
-    try:
-        pm = pymem.Pymem('csgo.exe')
-        client = pymem.process.module_from_name(pm.process_handle,'client.dll')
-        clientModule = pm.read_bytes(client.lpBaseOfDll, client.SizeOfImage)
-        address = client.lpBaseOfDll + re.search(rb'.\x0C\x5B\x5F\xB8\xFB\xFF\xFF\xFF',clientModule).start()
-        pm.write_uchar(address, 0xEB if pm.read_uchar(address) == 0x75 else 0x75)
-        pm.close_process()
-    except pymem.exception.ProcessNotFound:
-        print(Fore.YELLOW + time(), Fore.RED + '[MoneyReveal] csgo.exe process is not running!')
-    except pymem.exception.ProcessError:
-        print(Fore.YELLOW + time(), Fore.RED + '[MoneyReveal] Error accessing process csgo.exe')
-    except pymem.exception.ModuleNotFound:
-        print(Fore.YELLOW + time(), Fore.RED + '[MoneyReveal] module not found')
-    except pymem.exception.MemoryReadError:
-        print(Fore.YELLOW + time(), Fore.RED + '[MoneyReveal] Error reading memory')
-    except pymem.exception.MemoryWriteError:
-        print(Fore.YELLOW + time(), Fore.RED + '[MoneyReveal] Error writing memory')
-    except AttributeError:
-        print(Fore.YELLOW + time(), Fore.RED + '[MoneyReveal] Byte pattern not found')
-    else:
-        global statusMR
-        statusMR = not statusMR
-        print(Fore.YELLOW + time(), Fore.GREEN + "MoneyReveal is ON" if statusMR else Fore.RED + "MoneyReveal is OFF")
+class Cheat:
+    """Handles cheat functionalities."""
 
-version='1.5.3'
-fake_programs = ["WinBooster", "GameBooster", "DataAnalyzer", "CodeOptimizer", "TaskManagerPro", "SystemGuardian"]
-random_program = random.choice(fake_programs)
-banner=f'''
-    __  ___                                   ________               __
-   /  |/  /__  ____ ___  ____  _______  __   / ____/ /_  ___  ____ _/ /_
-  / /|_/ / _ \/ __ `__ \/ __ \/ ___/ / / /  / /   / __ \/ _ \/ __ `/ __/
- / /  / /  __/ / / / / / /_/ / /  / /_/ /  / /___/ / / /  __/ /_/ / /_
-/_/  /_/\___/_/ /_/ /_/\____/_/   \__, /   \____/_/ /_/\___/\__,_/\__/
-                                 /____/
+    VERSION="Release-1.5.4"
 
-                Made by Jesewe      Version: {version}
-'''
+    def __init__(self):
+        self.config = ConfigManager.load_config()
+        self.wallhack_status = False
+        self.radarhack_status = False
+        self.moneyreveal_status = False
+
+    def wallhack(self):
+        """Toggle WallHack."""
+        self._toggle_feature(
+            feature_name="WallHack",
+            status_attr="wallhack_status",
+            pattern=rb'\x33\xC0\x83\xFA.\xB9\x20'
+        )
+
+    def radarhack(self):
+        """Toggle RadarHack."""
+        self._toggle_feature(
+            feature_name="RadarHack",
+            status_attr="radarhack_status",
+            pattern=rb'\x74\x15\x8B\x47\x08\x8D\x4F\x08'
+        )
+
+    def moneyreveal(self):
+        """Toggle MoneyReveal."""
+        self._toggle_feature(
+            feature_name="MoneyReveal",
+            status_attr="moneyreveal_status",
+            pattern=rb'.\x0C\x5B\x5F\xB8\xFB\xFF\xFF\xFF'
+        )
+
+    def _toggle_feature(self, feature_name, status_attr, pattern):
+        try:
+            pm = pymem.Pymem('csgo.exe')
+            client = pymem.process.module_from_name(pm.process_handle, 'client.dll')
+            client_module = pm.read_bytes(client.lpBaseOfDll, client.SizeOfImage)
+            address = client.lpBaseOfDll + re.search(pattern, client_module).start()
+            pm.write_uchar(address, 1 if not getattr(self, status_attr) else 0)
+            pm.close_process()
+            setattr(self, status_attr, not getattr(self, status_attr))
+            logging.info(Fore.LIGHTMAGENTA_EX + f"{feature_name} {'ON' if getattr(self, status_attr) else 'OFF'}")
+        except Exception as e:
+            logging.error(Fore.LIGHTRED_EX + f"Error toggling {feature_name}: {e}")
+
+    def start(self):
+        Utility.set_console_title(f"CS:GO Memory Cheat | {self.VERSION}")
+        logging.info(Fore.LIGHTCYAN_EX + f"Welcome to CS:GO Memory Cheat {self.VERSION}")
+
+        keyboard.add_hotkey(cheat.config["WallHack"], cheat.wallhack)
+        keyboard.add_hotkey(cheat.config["RadarHack"], cheat.radarhack)
+        keyboard.add_hotkey(cheat.config["MoneyReveal"], cheat.moneyreveal)
+        keyboard.add_hotkey(cheat.config["Exit"], cheat.exit)
+
+        keyboard.wait()
+
+    def exit(self):
+        """Exit program."""
+        logging.info("Exiting program.")
+        os.abort()
 
 if __name__ == '__main__':
-    ctypes.windll.kernel32.SetConsoleTitleW(f'{random_program} v{version}')
-    print(Fore.YELLOW + banner)
-    print(check_for_updates(version))
-    print(Fore.LIGHTMAGENTA_EX + f'''
-        [{key1}] WallHack               [{key3}] MoneyReveal
-        [{key2}] RadarHack              [{key4}] Exit
-    ''')
-    keyboard.add_hotkey(key1, wallhack)
-    keyboard.add_hotkey(key2, radarhack)
-    keyboard.add_hotkey(key3, moneyreveal)
-    keyboard.add_hotkey(key4, exit_program)
-    keyboard.wait()
+    Logger.setup_logging()
+    cheat = Cheat()
+    cheat.start()
